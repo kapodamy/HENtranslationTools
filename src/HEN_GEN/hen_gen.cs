@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
+// ---------------------------------------------------------------------------------
+// C# net2 port of https://github.com/PS3Xploit/PS3HEN/blob/master/PS3HEN_GEN/main.c
+// ---------------------------------------------------------------------------------
 namespace HEN_GEN
 {
     class Hen_gen
