@@ -39,11 +39,13 @@
             this.comboBox_src = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.textBox_path = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.button_open = new System.Windows.Forms.Button();
+            this.textBox_path = new System.Windows.Forms.TextBox();
             this.label_warn = new System.Windows.Forms.Label();
             this.timer_warn_fadeOut = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -122,12 +124,9 @@
             // 
             this.comboBox_src.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_src.Enabled = false;
-            this.comboBox_src.Items.AddRange(new object[] {
-            "Welcome message",
-            "Updating message"});
             this.comboBox_src.Location = new System.Drawing.Point(15, 105);
             this.comboBox_src.Name = "comboBox_src";
-            this.comboBox_src.Size = new System.Drawing.Size(162, 21);
+            this.comboBox_src.Size = new System.Drawing.Size(365, 21);
             this.comboBox_src.TabIndex = 3;
             this.comboBox_src.SelectedIndexChanged += new System.EventHandler(this.ComboBox_src_SelectedIndexChanged);
             // 
@@ -144,8 +143,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.textBox_path);
-            this.groupBox1.Controls.Add(this.button_open);
+            this.groupBox1.Controls.Add(this.panel1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(368, 74);
@@ -153,11 +151,34 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "File source";
             // 
+            // panel1
+            // 
+            this.panel1.AllowDrop = true;
+            this.panel1.Controls.Add(this.button_open);
+            this.panel1.Controls.Add(this.textBox_path);
+            this.panel1.Location = new System.Drawing.Point(6, 19);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(356, 49);
+            this.panel1.TabIndex = 2;
+            this.panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.Panel1_DragDrop);
+            this.panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel1_DragEnter);
+            // 
+            // button_open
+            // 
+            this.button_open.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_open.Location = new System.Drawing.Point(281, 26);
+            this.button_open.Name = "button_open";
+            this.button_open.Size = new System.Drawing.Size(75, 23);
+            this.button_open.TabIndex = 1;
+            this.button_open.Text = "...";
+            this.button_open.UseVisualStyleBackColor = true;
+            this.button_open.Click += new System.EventHandler(this.Button_open_Click);
+            // 
             // textBox_path
             // 
             this.textBox_path.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox_path.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.textBox_path.Location = new System.Drawing.Point(6, 19);
+            this.textBox_path.Location = new System.Drawing.Point(0, 0);
             this.textBox_path.MaxLength = 3200;
             this.textBox_path.Name = "textBox_path";
             this.textBox_path.ReadOnly = true;
@@ -166,17 +187,6 @@
             this.textBox_path.TabIndex = 0;
             this.textBox_path.TabStop = false;
             this.textBox_path.Text = "(no file loaded)";
-            // 
-            // button_open
-            // 
-            this.button_open.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_open.Location = new System.Drawing.Point(287, 45);
-            this.button_open.Name = "button_open";
-            this.button_open.Size = new System.Drawing.Size(75, 23);
-            this.button_open.TabIndex = 1;
-            this.button_open.Text = "...";
-            this.button_open.UseVisualStyleBackColor = true;
-            this.button_open.Click += new System.EventHandler(this.Button_open_Click);
             // 
             // label_warn
             // 
@@ -218,7 +228,8 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -240,6 +251,7 @@
         private System.Windows.Forms.Button button_open;
         private System.Windows.Forms.Label label_warn;
         private System.Windows.Forms.Timer timer_warn_fadeOut;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

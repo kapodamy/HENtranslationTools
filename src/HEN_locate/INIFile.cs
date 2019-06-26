@@ -494,7 +494,7 @@ namespace Settings
         }
 
         // *** Sections Getters and Setters*** //
-        internal string[] GetSections(StoreTarget target)
+        internal string[] GetSectionsNames(StoreTarget target)
         {
             lock (m_Lock)
             {
@@ -620,7 +620,40 @@ namespace Settings
             }
         }
 
+        internal List<string> GetKeysNames(StoreTarget target, string section_name)
+        {
+            lock (m_Lock)
+            {
+                switch (target)
+                {
+                    case StoreTarget.Original:
+                        return ReadSectionsKeys(m_Sections, section_name);
+                    case StoreTarget.Modified:
+                        return ReadSectionsKeys(m_Modified, section_name);
+                    default:
+                        List<string> list = ReadSectionsKeys(m_Sections, section_name);
+                        List<string> list2 = ReadSectionsKeys(m_Modified, section_name);
+
+                        foreach (string section in list2) { if (!list.Contains(section)) { list.Add(section); } }
+                        return list;
+                }
+            }
+        }
+
         internal enum StoreTarget { Original, Modified, BothStores }
+
+        protected List<string> ReadSectionsKeys(Dictionary<string, Dictionary<string, string>> dic, string section_name)
+        {
+            Dictionary<string, string> section;
+
+            if (!dic.TryGetValue(section_name, out section)) return new List<string>();
+            var keys = section.Keys;
+            List<string> tmp = new List<string>(keys.Count);
+
+            foreach (var key in keys) { tmp.Add(key); }
+
+            return tmp;
+        }
 
         protected List<string> ReadDictionaryKeys(Dictionary<string, Dictionary<string, string>> dic)
         {

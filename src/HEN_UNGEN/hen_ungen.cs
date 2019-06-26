@@ -30,7 +30,6 @@ namespace HEN_UNGEN
 
         static int Main(string[] args)
         {
-            //args = new string[] { @"C:\Users\kapodamy\Desktop\hen\PS3HEN.BIN_CEX_484" };
             if (args.Length < 1)
             {
                 Console.WriteLine("\nPS3HEN.BIN Unpacker\nUsage:PS3HEN.BIN\n");
@@ -43,7 +42,7 @@ namespace HEN_UNGEN
                 {
                     sp.Position = 0x7fff8;
                     long stage2_size = swap64(sp);
-                    // sp.Position = 0x80000
+                    sp.Position = 0x80000;
                     dump(sp, stage2_size, "stage2.bin");
 
                     sp.Position = 0x1008b8;
@@ -51,8 +50,8 @@ namespace HEN_UNGEN
                     sp.Position = 0x102000;
                     dump(sp, stage0_size, "stage0.bin");
 
-                    sp.Position = 0x70010;// read directly from SCE header (inside of the SPRX)
-                    long HENplugin_size = swap64(sp) + swap64(sp);// header_length + data_length;
+                    sp.Position = 0x70010;// read sprx size directly from SCE header (inside of the SPRX)
+                    long HENplugin_size = swap64(sp) + swap64(sp);// sprx_size = header_length + data_length;
                     sp.Position = 0x70000;
                     dump(sp, HENplugin_size, "HENplugin.sprx");
                 }

@@ -1,10 +1,6 @@
 ﻿using Settings;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -14,15 +10,11 @@ namespace HEN_locate
     public partial class Form1 : Form
     {
         private const byte PADDING = 2;
+        private const string CONFIG_OFFSETS = "string-offsets";
+        private const string CONFIG_SUFFIXS = "string-has-suffix";
 
         private string lastPath = null;
         private INIFile config = null;
-
-        private List<Hen_String> list_strings = new List<Hen_String>()
-        {
-            new Hen_String("welcome message", 0x1208, "welcome_message", true),
-            new Hen_String("downloading message", 0x1368, "downloading_message", false)
-        };
 
         FileStream src = null;
 
@@ -38,7 +30,7 @@ namespace HEN_locate
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "HEN Plugin|HENplugin.prx;*.prx";
-                ofd.Title = "Select the PS3HEN file...";
+                ofd.Title = "Select the HEN plugin file...";
                 ofd.CheckFileExists = true;
                 ofd.CheckPathExists = true;
                 if (lastPath != null) ofd.InitialDirectory = lastPath;
@@ -48,13 +40,12 @@ namespace HEN_locate
                 {
                     // TODO: load the file
                     lastPath = ofd.InitialDirectory;
-                    file_load(ofd.FileName);
+                    File_load(ofd.FileName);
                 }
             }
         }
 
-
-        private void file_load(string path)
+        private void File_load(string path)
         {
             if (src != null)
             {
@@ -65,7 +56,7 @@ namespace HEN_locate
             {
                 src = new FileStream(path, FileMode.Open, FileAccess.ReadWrite);
 
-                foreach (var str in list_strings)
+                foreach (Hen_String str in comboBox_src.Items)
                 {
                     src.Position = str.OFFSET;
 
@@ -106,7 +97,7 @@ namespace HEN_locate
 
                     if (i >= read)
                     {
-                        throw new Exception("Invalid string size for " + str.DISPLAY_TEXT);
+                        throw new Exception("Invalid string size for:\n " + str.DISPLAY_TEXT);
                     }
 
                     src.Position = str.OFFSET;
@@ -172,24 +163,27 @@ namespace HEN_locate
         {
             config = new INIFile(AppDomain.CurrentDomain.BaseDirectory + "hen_locale.ini");
 
-            foreach (var str in list_strings)
-            {
-                Int64.TryParse(
-                    config.ExchangeValue("string offsets", str.CONFIG + "_offset", str.OFFSET.ToString()),
-                    out str.OFFSET
-                );
-            }
+            List<string> key_list = config.GetKeysNames(INIFile.StoreTarget.Original, CONFIG_OFFSETS);
 
-            config.Flush();
+            foreach (var key in key_list)
+            {
+                long offset = config.GetValue(CONFIG_OFFSETS, key, -1);
+                if (offset < 0) continue;
+
+                bool has_suffix = config.GetValue(CONFIG_SUFFIXS, key, false);
+
+                var str = new Hen_String(key.Replace('_', ' '), offset, has_suffix);
+
+                comboBox_src.Items.Add(str);
+            }
         }
 
 
         internal class Hen_String
         {
 
-            internal Hen_String(string d, long o, string c, bool s)
+            internal Hen_String(string d, long o, bool s)
             {
-                CONFIG = c;
                 OFFSET = o;
                 DISPLAY_TEXT = d;
 
@@ -200,12 +194,16 @@ namespace HEN_locate
 
             internal readonly string DISPLAY_TEXT;
             internal long OFFSET;
-            internal readonly string CONFIG;
 
             internal string text;
             internal string text_orig;
             internal string suffix;
             internal int max_size;
+
+            public override string ToString()
+            {
+                return DISPLAY_TEXT;
+            }
         }
 
         private void ComboBox_src_SelectedIndexChanged(object sender, EventArgs e)
@@ -218,7 +216,7 @@ namespace HEN_locate
                 textBox_custom.Enabled = false;
             }
 
-            var str = list_strings[comboBox_src.SelectedIndex];
+            var str = comboBox_src.SelectedItem as Hen_String;
             textBox_res.Text = str.text + str.suffix;
             textBox_orig.Text = str.text_orig;
             textBox_custom.Text = str.text;
@@ -229,7 +227,7 @@ namespace HEN_locate
         {
             if (comboBox_src.SelectedIndex < 0) return;
 
-            Hen_String str = list_strings[comboBox_src.SelectedIndex];
+            Hen_String str = comboBox_src.SelectedItem as Hen_String;
 
             string res = textBox_custom.Text;
             string current = textBox_custom.Text;
@@ -275,7 +273,7 @@ namespace HEN_locate
 
         private void Button_apply_Click(object sender, EventArgs e)
         {
-            foreach (var str in list_strings)
+            foreach (Hen_String str in comboBox_src.Items)
             {
                 src.Position = str.OFFSET;
 
@@ -310,6 +308,21 @@ namespace HEN_locate
         {
             label_warn.Visible = false;
             timer_warn_fadeOut.Stop();
+        }
+
+        private void Panel1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
+
+        }
+
+        private void Panel1_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            File_load(files[0]);
         }
     }
 }

@@ -25,6 +25,20 @@ namespace HEN_GEN
             src.Close();
         }
 
+        static void wipe(FileStream target, int amount)
+        {
+            byte[] buffer = new byte[amount];
+            target.Write(buffer, 0, amount);
+
+            target.Seek(-amount, SeekOrigin.Current);
+        }
+
+        static void setsize(FileStream target, int offset, long size)
+        {
+            byte[] buffer = swap64(size);
+            target.Position = offset;
+            target.Write(buffer, 0, buffer.Length);
+        }
 
         static int Main(string[] args)
         {
@@ -52,21 +66,41 @@ namespace HEN_GEN
                 return -1;
             }
 
+            const int max_stage2_size = 0x1fff8;
+            const int max_stage0_size = 0xd000;
+            const int max_sprx_size = 0xfff8;
+
+            if (stage2.Length > 0x1fff8)
+            {
+                Console.WriteLine("stage2 too big!EXITING!\n");
+                return -1;
+            }
+            if (stage0.Length > 0xd000)
+            {
+                Console.WriteLine("stage0 too big!EXITING!\n");
+                return -1;
+            }
+            if (sprx.Length > 0xfff8)
+            {
+                Console.WriteLine("sprx too big!EXITING!\n");
+                return -1;
+            }
+
             uint truncate_len = 0x110000;
 
-            byte[] size_stage2 = swap64(stage2.Length);
-            sp.Position = 0x7fff8;
-            sp.Write(size_stage2, 0, size_stage2.Length);
+            setsize(sp, 0x7fff8, stage2.Length);
+            sp.Position = 0x80000;
+            wipe(sp, max_stage2_size);
             //	truncate_len+=stage2.Length;
             dump(sp, stage2);
 
-            byte[] size_stage0 = swap64(stage0.Length);
+            setsize(sp, 0x1008b8, stage0.Length);
             sp.Position = 0x102000;
+            wipe(sp, max_stage0_size);
             dump(sp, stage0);
-            sp.Position = 0x1008b8;
-            sp.Write(size_stage0, 0, size_stage0.Length);
-            
+
             sp.Position = 0x70000;
+            wipe(sp, max_sprx_size);
             dump(sp, sprx);
 
             sp.SetLength(truncate_len);
