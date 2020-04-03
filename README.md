@@ -1,6 +1,6 @@
 # PS3 HEN translation tools
 translate the xml files is easy but if you expect change the `Welcome to PS3HEN` message in your locale here a couple of tools to help you. The welcome message is hardcoded inside of the file **PS3HEN.BIN**<br>
-Actually tested with the **PS3 HEN v2.3.1** ¡Don't use in other versions can have diferent offsets in the embedded files!
+Actually tested with the **PS3 HEN v3.0.1** Â¡Don't use in other versions can have diferent offsets in the embedded files!
 
 **Warning**: a bad edition can lead to reinstall the PS3 HEN
 <br>
@@ -14,4 +14,4 @@ Instructions:
 
 5. Run `_sign_plugin.bat` to encrypt the modified **HENplugin.prx** file (note: this will replace the HENplugin.sprx)
 6. Finally run `_pack.bat` to update the **PS3HEN.BIN** file with your changes
-7. ¡Done! copy the file back to the PS3
+7. Â¡Done! copy the file back to the PS3
